@@ -33,7 +33,7 @@ dependencies {
         compileOnly("com.github.StatuParsek:Parsek:main-SNAPSHOT")
         compileOnly("com.github.StatuParsek:parsek-plugin-database:main-SNAPSHOT")
         compileOnly("com.github.StatuParsek:parsek-plugin-auth:main-SNAPSHOT")
-        compileOnly("com.github.StatuParsek:parsek-plugin-payment:main-SNAPSHOT")
+        compileOnly("com.github.StatuParsek:parsek-plugin-payment:v1.1.0")
     }
 
     compileOnly(kotlin("stdlib-jdk8"))
