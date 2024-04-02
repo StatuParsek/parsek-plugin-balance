@@ -1,37 +1,47 @@
 package co.statu.rule.plugins.balance
 
+import co.statu.parsek.PluginEventManager
+import co.statu.parsek.api.config.PluginConfigManager
 import co.statu.parsek.error.BadRequest
 import co.statu.parsek.model.Successful
 import co.statu.parsek.util.TextUtil.compileInline
 import co.statu.rule.auth.db.model.User
-import co.statu.rule.database.Dao.Companion.get
+import co.statu.rule.database.DatabaseManager
 import co.statu.rule.plugins.balance.db.dao.BalanceDao
+import co.statu.rule.plugins.balance.db.impl.BalanceDaoImpl
 import co.statu.rule.plugins.balance.event.BalanceEventListener
 import co.statu.rule.plugins.payment.api.Checkout
 import co.statu.rule.plugins.payment.api.TypeListener
 import co.statu.rule.plugins.payment.db.model.Purchase
 import co.statu.rule.plugins.payment.util.TextUtil.toCurrencyFormat
+import org.springframework.beans.factory.config.ConfigurableBeanFactory
+import org.springframework.context.annotation.Scope
+import org.springframework.stereotype.Component
 
-class BalancePaymentListener : TypeListener {
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+class BalancePaymentListener(private val balancePlugin: BalancePlugin) : TypeListener {
     private val balanceEventHandlers by lazy {
-        BalancePlugin.INSTANCE.context.pluginEventManager.getEventHandlers<BalanceEventListener>()
+        PluginEventManager.getEventListeners<BalanceEventListener>()
+    }
+
+    private val pluginConfigManager by lazy {
+        balancePlugin.pluginBeanContext.getBean(PluginConfigManager::class.java) as PluginConfigManager<BalanceConfig>
+    }
+
+    private val databaseManager by lazy {
+        balancePlugin.pluginBeanContext.getBean(DatabaseManager::class.java)
     }
 
     private val balanceConfig by lazy {
-        BalancePlugin.pluginConfigManager.config
+        pluginConfigManager.config
     }
 
     private val compiledDescription by lazy {
         balanceConfig.description.compileInline()
     }
 
-    private val balanceDao by lazy {
-        get<BalanceDao>(BalancePlugin.tables)
-    }
-
-    private val databaseManager by lazy {
-        BalancePlugin.databaseManager
-    }
+    private val balanceDao: BalanceDao = BalanceDaoImpl()
 
     private val jdbcPool by lazy {
         databaseManager.getConnectionPool()

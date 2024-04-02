@@ -1,22 +1,28 @@
 package co.statu.rule.plugins.balance.event
 
+import co.statu.parsek.api.annotation.EventListener
 import co.statu.parsek.api.config.PluginConfigManager
-import co.statu.parsek.api.event.ParsekEventListener
+import co.statu.parsek.api.event.CoreEventListener
 import co.statu.parsek.config.ConfigManager
 import co.statu.rule.plugins.balance.BalanceConfig
 import co.statu.rule.plugins.balance.BalancePlugin
-import co.statu.rule.plugins.balance.BalancePlugin.Companion.logger
 import co.statu.rule.plugins.balance.config.migration.ConfigMigration1to2
+import org.slf4j.Logger
 
-class ParsekEventHandler : ParsekEventListener {
+@EventListener
+class CoreEventHandler(private val balancePlugin: BalancePlugin, private val logger: Logger) : CoreEventListener {
     override suspend fun onConfigManagerReady(configManager: ConfigManager) {
-        BalancePlugin.pluginConfigManager = PluginConfigManager(
+        val pluginConfigManager = PluginConfigManager(
             configManager,
-            BalancePlugin.INSTANCE,
+            balancePlugin,
             BalanceConfig::class.java,
-            logger,
             listOf(ConfigMigration1to2()),
             listOf("balance")
+        )
+
+        balancePlugin.pluginBeanContext.beanFactory.registerSingleton(
+            pluginConfigManager.javaClass.name,
+            pluginConfigManager
         )
 
         logger.info("Initialized plugin config")
