@@ -30,10 +30,10 @@ dependencies {
         compileOnly(project(mapOf("path" to ":plugins:parsek-plugin-auth")))
         compileOnly(project(mapOf("path" to ":plugins:parsek-plugin-payment")))
     } else {
-        compileOnly("com.github.StatuParsek:Parsek:main-SNAPSHOT")
-        compileOnly("com.github.StatuParsek:parsek-plugin-database:main-SNAPSHOT")
-        compileOnly("com.github.StatuParsek:parsek-plugin-auth:main-SNAPSHOT")
-        compileOnly("com.github.StatuParsek:parsek-plugin-payment:v1.1.0")
+        compileOnly("com.github.StatuParsek:Parsek:v2.3.0")
+        compileOnly("com.github.StatuParsek:parsek-plugin-database:v1.2.1")
+        compileOnly("com.github.StatuParsek:parsek-plugin-auth:v2.4.2")
+        compileOnly("com.github.StatuParsek:parsek-plugin-payment:v1.1.1")
     }
 
     compileOnly(kotlin("stdlib-jdk8"))
